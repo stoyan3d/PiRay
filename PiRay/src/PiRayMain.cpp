@@ -51,7 +51,7 @@ public:
 		for (size_t i = 0; i < m_Scene.Spheres.size(); i++)
 		{
 			// Make sure that each sphere's controls are unique
-			ImGui::PushID(i);
+			ImGui::PushID(static_cast<int>(i));
 
 			Sphere& sphere = m_Scene.Spheres[i];
 			ImGui::DragFloat3("Position", glm::value_ptr(sphere.Position), 0.1f);
