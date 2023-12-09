@@ -64,7 +64,7 @@ glm::vec4 Renderer::PerPixel(uint32_t x, uint32_t y)
 		Renderer::HitPayload payload = TraceRay(ray);
 		if (payload.HitDistance < 0)
 		{
-			glm::vec3 skyColor = glm::vec3(0.0f, 0.0f, 0.0f);
+			glm::vec3 skyColor = glm::vec3(0.6f, 0.7f, 0.9f);
 			color += skyColor * multiplier;
 			break;
 		}
@@ -73,14 +73,16 @@ glm::vec4 Renderer::PerPixel(uint32_t x, uint32_t y)
 		float directLight = glm::max(glm::dot(payload.WorldNormal, -lightDir), 0.0f);
 
 		const Sphere& sphere = m_ActiveScene->Spheres[payload.ObjectIndex];
-		glm::vec3 sphereColor = sphere.Albedo;
+		const Material& material = m_ActiveScene->Materials[sphere.MaterialIndex];
+		glm::vec3 sphereColor = material.Albedo;
 		sphereColor *= directLight;
 		color += sphereColor * multiplier;
 
-		multiplier *= 0.7f;
+		multiplier *= 0.5f;
 
 		ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
-		ray.Direction = glm::reflect(ray.Direction, payload.WorldNormal);
+		ray.Direction = glm::reflect(ray.Direction, 
+			payload.WorldNormal + material.Roughness * Walnut::Random::Vec3(-0.5f, 0.5f));
 	}
 
 	return glm::vec4{ color, 1.0f };
