@@ -14,10 +14,14 @@ public:
 	{
 		ImGui::Begin("Settings");
 		ImGui::Text("Last render: %.3fms", m_LastRenderTime);
+		static float sphereColor[3] = { 1.0f, 0.0f, 1.0f };
+
 		if (ImGui::Button("Render"))
 		{
-			Render();
+			Render(sphereColor);
 		}
+
+		ImGui::ColorEdit3("Sphere color", sphereColor);
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0, });
@@ -33,15 +37,15 @@ public:
 		ImGui::End();
 		ImGui::PopStyleVar();
 
-		Render();
+		Render(sphereColor);
 	}
 
-	void Render()
+	void Render(const float* sphereColor)
 	{
 		Timer timer;
 
 		m_Renderer.OnResize(m_ViewportWidth, m_ViewportHeight);
-		m_Renderer.Render();
+		m_Renderer.Render(glm::vec3{ sphereColor[0], sphereColor[1], sphereColor[2] });
 
 		m_LastRenderTime = timer.ElapsedMillis();
 	}

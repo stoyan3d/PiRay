@@ -31,7 +31,7 @@ void Renderer::OnResize(uint32_t width, uint32_t height)
 	m_ImageData = new uint32_t[width * height];
 }
 
-void Renderer::Render()
+void Renderer::Render(const glm::vec3 &sphereColor)
 {
 	for (uint32_t y{ 0 }; y < m_FinalImage->GetHeight(); y++)
 	{
@@ -40,7 +40,7 @@ void Renderer::Render()
 			glm::vec2 coord = { x / static_cast<float>(m_FinalImage->GetWidth()), y / static_cast<float>(m_FinalImage->GetHeight()) };
 			coord = coord * 2.0f - 1.0f;
 
-			glm::vec4 color = PerPixel(coord);
+			glm::vec4 color = PerPixel(coord, sphereColor);
 			color = glm::clamp(color, glm::vec4(0.0f), glm::vec4(1.0f));
 			m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(color);
 		}
@@ -49,7 +49,7 @@ void Renderer::Render()
 	m_FinalImage->SetData(m_ImageData);
 }
 
-glm::vec4 Renderer::PerPixel(glm::vec2 coord)
+glm::vec4 Renderer::PerPixel(glm::vec2 coord, const glm::vec3 &sphereColor)
 {
 	glm::vec3 rayOrigin{ 0.0f, 0.0f, 1.0f };
 	glm::vec3 rayDirection{ coord.x, coord.y, -1.0f };
@@ -72,11 +72,11 @@ glm::vec4 Renderer::PerPixel(glm::vec2 coord)
 	glm::vec3 lightDir = glm::normalize(glm::vec3(-1, -1, -1));
 	float directLight = glm::max(glm::dot(normal, -lightDir), 0.0f);
 
-	glm::vec3 sphereColor{ 1, 0, 1 };
-	sphereColor *= directLight;
+	glm::vec3 diffuseLighting{ 0 };
+	diffuseLighting = sphereColor * directLight;
 
 	if (discriminant < 0.0f)
 		return glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
 	
-	return glm::vec4{sphereColor, 1.0f };
+	return glm::vec4{ diffuseLighting, 1.0f };
 }
