@@ -21,6 +21,6 @@ private:
 	glm::vec4 TraceRay(const Ray& ray, const glm::vec3 &sphereColor);
 private:
 	std::shared_ptr<Walnut::Image> m_FinalImage;
-	uint32_t* m_ImageData;
+	uint32_t* m_ImageData = nullptr;
 
 };
