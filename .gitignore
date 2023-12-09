@@ -11,3 +11,4 @@ bin-int/
 
 # Exclude
 !vendor/bin
+PiRay/imgui.ini
