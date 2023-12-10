@@ -27,18 +27,10 @@ public:
 	void ResetFrameIndex() { m_FrameIndex = 1; }
 	Settings& GetSettings() { return m_Settings; }
 private:
-	struct HitPayload
-	{
-		float HitDistance;
-		glm::vec3 WorldPosition;
-		glm::vec3 WorldNormal;
-
-		int ObjectIndex;
-	};
-
 	glm::vec4 PerPixel(uint32_t x, uint32_t y); // RayGen
 
 	HitPayload TraceRay(const Ray& ray);
+	HitPayload TraceRaySphere(const Ray& ray);
 	HitPayload ClosestHit(const Ray& ray, float hitDistance, int objectIndex);
 	HitPayload Miss(const Ray& ray);
 private:

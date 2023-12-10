@@ -8,6 +8,25 @@
 #include "Camera.h"
 
 #include <glm/gtc/type_ptr.hpp>
+#include "RenderObjects/Sphere.h"
+
+/// <summary>
+/// Potential areas of improvement
+/// 1. Energy conserving BRDF with metallics
+/// 2. Scene saving and loading
+/// 3. Quad and Box shape type
+/// 4. Multi sampling
+/// 5. Lights
+/// 6. Reset accumulation on scene change
+/// 7. Linear color
+/// 8. Refraction
+/// 9. HDRIs
+/// 10. Translation, rotation and scale
+/// 11. Importing geometry
+/// 12. Texture mapping
+/// 13. BVH
+/// 14. Importance Sampling
+/// </summary>
 
 using namespace Walnut;
 
@@ -31,26 +50,27 @@ public:
 		orangeSphere.EmissionPower = 2.0f;
 
 		{
-			Sphere sphere = m_Scene.Spheres.emplace_back();
-			sphere.Position = { 0.0f, 0.0f, 0.0f };
-			sphere.Radius = 1.0f;
-			sphere.MaterialIndex = 0;
+			auto sphere = std::make_shared<Sphere>();
+			sphere->Position = { 0.0f, 0.0f, 0.0f };
+			sphere->Radius = 1.0f;
+			sphere->MaterialIndex = 0;
+			m_Scene.RenderObjects.push_back(sphere);
 		}
 
 		{
-			Sphere sphere;
-			sphere.Position = { 2.0f, 0.0f, 0.0f };
-			sphere.Radius = 1.0f;
-			sphere.MaterialIndex = 2;
-			m_Scene.Spheres.push_back(sphere);
+			auto sphere = std::make_shared<Sphere>();
+			sphere->Position = { 2.0f, 0.0f, 0.0f };
+			sphere->Radius = 1.0f;
+			sphere->MaterialIndex = 2;
+			m_Scene.RenderObjects.push_back(sphere);
 		}
 
 		{
-			Sphere sphere;
-			sphere.Position = { 0.0f, -101.0f, 0.0f };
-			sphere.Radius = 100.0f;
-			sphere.MaterialIndex = 1;
-			m_Scene.Spheres.push_back(sphere);
+			auto sphere = std::make_shared<Sphere>();
+			sphere->Position = { 0.0f, -101.0f, 0.0f };
+			sphere->Radius = 100.0f;
+			sphere->MaterialIndex = 1;
+			m_Scene.RenderObjects.push_back(sphere);
 		}
 	}
 	virtual void OnUpdate(float ts) override
@@ -76,15 +96,16 @@ public:
 		ImGui::End();
 
 		ImGui::Begin("Scene");
-		for (size_t i = 0; i < m_Scene.Spheres.size(); i++)
+		for (size_t i = 0; i < m_Scene.RenderObjects.size(); i++)
 		{
 			// Make sure that each sphere's controls are unique
 			ImGui::PushID(static_cast<int>(i));
 
-			Sphere& sphere = m_Scene.Spheres[i];
-			ImGui::DragFloat3("Position", glm::value_ptr(sphere.Position), 0.1f);
-			ImGui::DragFloat("Radius", &sphere.Radius, 0.1f);
-			ImGui::DragInt("Material", &sphere.MaterialIndex, 1.0f, 0, static_cast<int>(m_Scene.Materials.size() - 1));
+			// TODO There is probably a better way of doing this. It will error out if we have a box
+			const auto& sphere = dynamic_cast<Sphere*>(m_Scene.RenderObjects[i].get());
+			ImGui::DragFloat3("Position", glm::value_ptr(sphere->Position), 0.1f);
+			ImGui::DragFloat("Radius", &sphere->Radius, 0.1f);
+			ImGui::DragInt("Material", &sphere->MaterialIndex, 1.0f, 0, static_cast<int>(m_Scene.Materials.size() - 1));
 
 			ImGui::Separator();
 
