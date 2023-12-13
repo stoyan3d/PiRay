@@ -35,6 +35,17 @@ namespace Utils {
 			RandomFloat(seed) * 2.0f - 1.0f
 		));
 	}
+
+	static glm::vec4 LinearToGamma(const glm::vec4& color)
+	{
+		// TODO Use a pow instead if we want a more accurate conversion but it takes longer to compute
+		return glm::vec4{
+			glm::sqrt(color.r),
+			glm::sqrt(color.g),
+			glm::sqrt(color.b),
+			color.a
+		};
+	}
 }
 
 void Renderer::OnResize(uint32_t width, uint32_t height)
@@ -87,6 +98,7 @@ void Renderer::Render(const Scene& scene, const Camera& camera)
 					accumulatedColor /= static_cast<float>(m_FrameIndex);
 
 					accumulatedColor = glm::clamp(accumulatedColor, glm::vec4(0.0f), glm::vec4(1.0f));
+					accumulatedColor = Utils::LinearToGamma(accumulatedColor);
 					m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(accumulatedColor);
 				});
 		});
